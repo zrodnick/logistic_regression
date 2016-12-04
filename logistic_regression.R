@@ -103,7 +103,7 @@ plot(allEffects(hyp.out))
 ##   2. Predict the probability of working for each level of marital
 ##      status.
 NH11_wrangle <- NH11
-NH11_wrangle$r_maritl <- lapply(NH11_wrangle$r_maritl, function(x){replace(x, x=="9 Unknown marital status", NA)})
+NH11_wrangle$r_maritl <- factor(gsub('9 Unknown marital status', 'NA', NH11_wrangle$r_maritl))
 
 
 
