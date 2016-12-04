@@ -103,11 +103,23 @@ plot(allEffects(hyp.out))
 ##   2. Predict the probability of working for each level of marital
 ##      status.
 NH11_wrangle <- NH11
-NH11_wrangle$r_maritl <- factor(gsub('9 Unknown marital status', 'NA', NH11_wrangle$r_maritl))
+NH11_wrangle$r_maritl <- factor(gsub('9 Unknown marital status', NA, NH11_wrangle$r_maritl))
+NH11_wrangle$everwrk <- factor(gsub("7 Refused", NA, NH11_wrangle$everwrk))
+NH11_wrangle$everwrk <- factor(gsub("8 Not ascertained", NA, NH11_wrangle$everwrk))
+NH11_wrangle$everwrk <- factor(gsub("9 Don't know", NA, NH11_wrangle$everwrk))
+NH11_wrangle[NH11_wrangle=="NA"] <- NA
 
+NH11_omit <- select(NH11_wrangle, age_p, r_maritl, everwrk)
+NH11_omit <- na.omit(NH11_omit)
 
+mod1 <- glm(everwrk~age_p+r_maritl, data=NH11_omit, family=binomial)
+pred1 <- predict(mod1, type="response")
+tapply(pred1, NH11_omit$everwrk, mean)
+table(NH11_omit$everwrk, pred1 >= .5)
+#this model sucks.
 
-mod1 <- glm(everwrk~age_p+r_maritl, data=NH11_wrangle, family="binomial")
+allEffects(mod1)
+
 
 ##   Note that the data is not perfectly clean and ready to be modeled. You
 ##   will need to clean up at least some of the variables before fitting
